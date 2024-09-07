@@ -14,6 +14,7 @@ SECTIONS
         *(.vector_table)
         *(.text*)
         *(.rodata*)
+        . = ALIGN(8);
      } > ROM
     _text_end = .;
 

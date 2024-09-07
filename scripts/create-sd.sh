@@ -13,6 +13,7 @@ command -v qemu-nbd >/dev/null || { echo "qemu-nbd not installed"; exit 1; }
 
 qemu-img create "$SDNAME" 64M
 sudo qemu-nbd -c /dev/nbd0 "$SDNAME"
+sleep 1
 (echo o;
   echo n; echo p
   echo 1

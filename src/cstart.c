@@ -1,25 +1,30 @@
+#include "cpu.h"
+#include "gic.h"
+#include "uart_pl011.h"
+
+#include <stdbool.h>
 #include <stdint.h>
-
-volatile uint8_t *uart0 = (uint8_t *)0x10009000;
-
-void write(const char *str) {
-  while (*str) {
-    *uart0 = *str++;
-  }
-}
+#include <string.h>
 
 int main() {
-  const char *s = "Hello world from bare-metal!\n";
-  write(s);
+  uart_config_t config = {
+      .data_bits = 8,
+      .stop_bits = 1,
+      .parity = false,
+      .baudrate = 9600,
+  };
+  uart_configure(&config);
 
-  *uart0 = 'A';
-  *uart0 = 'B';
-  *uart0 = 'C';
-  *uart0 = '\n';
+  uart_putchar('A');
+  uart_putchar('B');
+  uart_putchar('C');
+  uart_putchar('\n');
 
-  while (*s) {
-    *uart0 = *s++;
-  }
+  uart_write("input:\n");
+
+  gic_init();
+  gic_enable_interrupt(UART0_INTERRUPT);
+  cpu_enable_interrupts();
 
   while (1)
     ;

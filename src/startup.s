@@ -13,11 +13,14 @@ _Reset:
     b Abort_Exception  /* 0xC  Prefetch Abort */
     b Abort_Exception /* 0x10 Data Abort */
     b . /* 0x14 Reserved */
-    b . /* 0x18 IRQ */
+    b uart_isr /* 0x18 IRQ */
     b . /* 0x1C FIQ */
 
 .section .text
 Reset_Handler:
+    ldr r0, =0x60000000
+    mcr p15, #0, r0, c12, c0, #0
+
     /* FIQ stack */
     msr cpsr_c, MODE_FIQ
     ldr r1, =_fiq_stack_start
@@ -71,8 +74,12 @@ bss_loop:
     strlt r0, [r1], #4
     blt bss_loop
 
+    /* Disable supervisor mode interrupts */
+    cpsid if
+
     bl main
     b Abort_Exception
 
 Abort_Exception:
     swi 0xFF
+
