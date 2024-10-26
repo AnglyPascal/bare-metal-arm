@@ -2,9 +2,9 @@
 #include "gic.h"
 #include "uart_pl011.h"
 
-#include <stdbool.h>
-#include <stdint.h>
-#include <string.h>
+/* #include <stdbool.h> */
+/* #include <stdint.h> */
+/* #include <string.h> */
 
 int main() {
   uart_config_t config = {

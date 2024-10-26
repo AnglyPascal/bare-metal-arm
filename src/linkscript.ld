@@ -10,6 +10,14 @@ MEMORY
 
 SECTIONS
 {
+    /DISCARD/ :
+    {
+        /* *(.ARM.exidx*) */
+        /* *(.eh_frame*) */
+        *(.ARM.extab*)
+        *(.gnu.linkonce.armexidx.*)
+    }
+
     .text : {
         *(.vector_table)
         *(.text*)
