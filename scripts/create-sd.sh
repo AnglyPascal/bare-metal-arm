@@ -13,6 +13,7 @@ command -v qemu-nbd >/dev/null || { echo "qemu-nbd not installed"; exit 1; }
 
 qemu-img create "$SDNAME" 64M
 sudo qemu-nbd -c /dev/nbd0 "$SDNAME"
+sleep 1
 (echo o;
   echo n; echo p
   echo 1
@@ -20,9 +21,10 @@ sudo qemu-nbd -c /dev/nbd0 "$SDNAME"
   echo w; echo p) | sudo fdisk /dev/nbd0
 sudo mkfs.ext2 /dev/nbd0p1
 
-mkdir tmp || true
+rm -rf tmp
+mkdir tmp
 sudo mount -o user /dev/nbd0p1 tmp/
 sudo cp "$UIMGNAME" tmp/
 sudo umount /dev/nbd0p1
-rmdir tmp || true
+rm -rf tmp
 sudo qemu-nbd -d /dev/nbd0
