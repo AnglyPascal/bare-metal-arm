@@ -15,9 +15,10 @@ set(CMAKE_OBJCOPY "arm-none-eabi-objcopy")
 
 file(GLOB LINKSCRIPT "src/linkscript.ld")
 set(ASMFILES src/startup.s)
-set(SRCLIST src/uart_pl011.cpp src/cstart.cpp)
+file(GLOB SRCLIST "src/*.cpp")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -g -Wall -nostartfiles")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Og -g -Wall -nostartfiles")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mthumb -mcpu=cortex-a9")
 set(CMAKE_CXX_FLAGS
     "${CMAKE_CXX_FLAGS} -fno-exceptions -fno-unwind-tables -fno-rtti")
 set(CMAKE_EXE_LINKER_FLAGS "-T ${LINKSCRIPT} -lgcc -lm")

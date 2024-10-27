@@ -1,11 +1,15 @@
 #include "uart_pl011.h"
-#include "hardware.h"
 #include <math.h>
 
 namespace uart
 {
 
-static volatile registers_t *const uart0 = (uart::registers_t *)UART0;
+static volatile registers_t *uart0 = (registers_t *)UART0;
+
+error_t init(void)
+{
+  return error_t::UART_OK;
+}
 
 error_t configure(config_t &config)
 {
@@ -13,18 +17,22 @@ error_t configure(config_t &config)
   if (config.data_bits < 5u || config.data_bits > 8u) {
     return error_t::UART_INVALID_ARGUMENT_WORDSIZE;
   }
+
   if (config.stop_bits == 0u || config.stop_bits > 2u) {
     return error_t::UART_INVALID_ARGUMENT_STOP_BITS;
   }
+
   if (config.baudrate < 110u || config.baudrate > 460800u) {
     return error_t::UART_INVALID_ARGUMENT_BAUDRATE;
   }
+
   /* Disable the UART */
   uart0->CR &= ~CR_UARTEN;
+
   /* Finish any current transmission, and flush the FIFO */
   while (uart0->FR & FR_BUSY)
     ;
-  uart0->LCRH &= ~LCRH_FEN;
+  uart0->LCR_H &= ~LCR_H_FEN;
 
   /* Set baudrate */
   double intpart, fractpart;
@@ -34,46 +42,49 @@ error_t configure(config_t &config)
   uart0->IBRD = (uint16_t)intpart;
   uart0->FBRD = (uint8_t)((fractpart * 64u) + 0.5);
 
-  uint32_t lcrh = 0u;
+  uint32_t lcr_h = 0u;
 
   /* Set data word size */
   switch (config.data_bits) {
   case 5:
-    lcrh |= LCRH_WLEN_5BITS;
+    lcr_h |= LCR_H_WLEN_5BITS;
     break;
   case 6:
-    lcrh |= LCRH_WLEN_6BITS;
+    lcr_h |= LCR_H_WLEN_6BITS;
     break;
   case 7:
-    lcrh |= LCRH_WLEN_7BITS;
+    lcr_h |= LCR_H_WLEN_7BITS;
     break;
   case 8:
-    lcrh |= LCRH_WLEN_8BITS;
+    lcr_h |= LCR_H_WLEN_8BITS;
     break;
   }
 
   /* Set parity. If enabled, use even parity */
   if (config.parity) {
-    lcrh |= LCRH_PEN;
-    lcrh |= LCRH_EPS;
-    lcrh |= LCRH_SPS;
+    lcr_h |= LCR_H_PEN;
+    lcr_h |= LCR_H_EPS;
+    lcr_h |= LCR_H_SPS;
   } else {
-    lcrh &= ~LCRH_PEN;
-    lcrh &= ~LCRH_EPS;
-    lcrh &= ~LCRH_SPS;
+    lcr_h &= ~LCR_H_PEN;
+    lcr_h &= ~LCR_H_EPS;
+    lcr_h &= ~LCR_H_SPS;
   }
 
   /* Set stop bits */
   if (config.stop_bits == 1u) {
-    lcrh &= ~LCRH_STP2;
+    lcr_h &= ~LCR_H_STP2;
   } else if (config.stop_bits == 2u) {
-    lcrh |= LCRH_STP2;
+    lcr_h |= LCR_H_STP2;
   }
 
   /* Enable FIFOs */
-  lcrh |= LCRH_FEN;
+  lcr_h |= LCR_H_FEN;
 
-  uart0->LCRH = lcrh;
+  uart0->LCR_H = lcr_h;
+
+  /* Enable the UARTRXINTR interrupt, Tb. 3-14 */
+  uart0->IMSC |= IMSC_RXIM;
 
   /* Enable the UART */
   uart0->CR |= CR_UARTEN;
