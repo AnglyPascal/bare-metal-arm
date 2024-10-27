@@ -21,7 +21,8 @@ file(GLOB SRCLIST src/*.cpp)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -nostdlib++ -nostartfiles -g -Og -Wall")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mthumb -mcpu=cortex-a9 -DCPU_A9")
-
+set(CMAKE_CXX_FLAGS
+    "${CMAKE_CXX_FLAGS} -fno-exceptions -fno-unwind-tables -fno-rtti")
 set(CMAKE_EXE_LINKER_FLAGS "-T ${LINKSCRIPT} -lgcc -lm")
 
 # add_custom_target(u-boot COMMAND make vexpress_ca9x4_config ARCH=arm

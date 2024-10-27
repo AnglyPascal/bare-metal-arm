@@ -1,11 +1,11 @@
-#ifndef UART_PL011_H
-#define UART_PL011_H
+#pragma once
 
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 
-typedef volatile struct __attribute__((packed)) {
+namespace uart {
+struct __attribute__((packed)) registers_t {
   uint32_t DR;            /* 0x0 Data Register */
   uint32_t RSRECR;        /* 0x4 Receive status / error clear register */
   uint32_t _reserved0[4]; /* 0x8 - 0x14 reserved */
@@ -21,23 +21,23 @@ typedef volatile struct __attribute__((packed)) {
   uint32_t RIS;           /* 0x3C Raw interrupt status register */
   uint32_t MIS;           /* 0x40 Masked interrupt status register */
   uint32_t ICR;           /* 0x44 Interrupt clear register */
-} uart_registers_t;
+};
 
-typedef enum {
+enum class error_t {
   UART_OK = 0,
   UART_INVALID_ARGUMENT_BAUDRATE,
   UART_INVALID_ARGUMENT_WORDSIZE,
   UART_INVALID_ARGUMENT_STOP_BITS,
   UART_RECEIVE_ERROR,
   UART_NO_DATA
-} uart_error_t;
+};
 
-typedef struct {
+struct config_t {
   uint8_t data_bits;
   uint8_t stop_bits;
   bool parity;
   uint32_t baudrate;
-} uart_config_t;
+};
 
 #define UART0_INTERRUPT (37u)
 
@@ -74,10 +74,9 @@ typedef struct {
 
 #define ICR_ALL_MASK (0x7FFu)
 
-uart_error_t uart_configure(uart_config_t *config);
-void uart_putchar(char c);
-void uart_write(const char *data);
-uart_error_t uart_getchar(char *c);
-void uart_isr(void);
-
-#endif
+error_t configure(config_t *config);
+void putchar(char c);
+void write(const char *data);
+error_t getchar(char *c);
+/* void isr(void); */
+} // namespace uart

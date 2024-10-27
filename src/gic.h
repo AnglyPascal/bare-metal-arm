@@ -1,11 +1,11 @@
-#ifndef GIC_H
-#define GIC_H
+#pragma once
 
 #include "cpu.h"
 
 #include <stdint.h>
 
-typedef volatile struct {
+namespace gic {
+ struct gic_distributor_registers_t {
   uint32_t DCTLR;        /* 0x0 Distributor Control register */
   const uint32_t DTYPER; /* 0x4 Controller type register */
 
@@ -31,9 +31,9 @@ typedef volatile struct {
   uint32_t DICFGR[64]; /* 0xC00 - 0xCFC Interrupt config registers */
   /* Some PPI, SPI status registers and identification registers beyond this.
      Don't care about them */
-} gic_distributor_registers_t;
+};
 
-typedef volatile struct {
+struct gic_cpu_interface_registers_t {
   uint32_t CCTLR; /* 0x0 CPU Interface control register */
 
   uint32_t CCPMR; /* 0x4 Interrupt priority mask register */
@@ -49,15 +49,15 @@ typedef volatile struct {
   const uint32_t CAIAR;   /* 0x20 Aliased interrupt acknowledge register */
   uint32_t CAEOIR;        /* 0x24 Aliased end of interrupt register */
   const uint32_t CAHPPIR; /* 0x28 Aliased highest priority pending interrupt register */
-} gic_cpu_interface_registers_t;
+};
 
 void gic_init(void);
 void gic_enable_interrupt(uint16_t number);
 uint16_t gic_acknowledge_interrupt();
 void gic_end_interrupt(uint16_t number);
 
-#define GIC_DIST_BASE ((cpu_get_periphbase() + GIC_DISTRIBUTOR_OFFSET))
-#define GIC_IFACE_BASE ((cpu_get_periphbase() + GIC_IFACE_OFFSET))
+#define GIC_DIST_BASE ((cpu::cpu_get_periphbase() + GIC_DISTRIBUTOR_OFFSET))
+#define GIC_IFACE_BASE ((cpu::cpu_get_periphbase() + GIC_IFACE_OFFSET))
 
 #define DCTRL_ENABLE (1u)
 #define CCTRL_ENABLE (1u)
@@ -65,4 +65,5 @@ void gic_end_interrupt(uint16_t number);
 #define CIAR_ID_MASK (0x3FFu)
 #define CEOIR_ID_MASK (0x3FFu)
 
-#endif
+} // namespace gic
+

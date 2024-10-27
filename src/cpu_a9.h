@@ -1,8 +1,8 @@
-#ifndef CPU_A9_H
-#define CPU_A9_H
+#pragma once
 
 #include <stdint.h>
 
+namespace cpu {
 #define WRITE32(_reg, _val) (*(volatile uint32_t *)&_reg = _val)
 
 #define GIC_IFACE_OFFSET (0x100ul)
@@ -21,4 +21,4 @@ inline void cpu_enable_interrupts(void) {
   asm("cpsie if");
 }
 
-#endif
+} // namespace cpu

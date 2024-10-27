@@ -7,24 +7,24 @@
 /* #include <string.h> */
 
 int main() {
-  uart_config_t config = {
+  uart::config_t config = {
       .data_bits = 8,
       .stop_bits = 1,
       .parity = false,
       .baudrate = 9600,
   };
-  uart_configure(&config);
+  uart::configure(&config);
 
-  uart_putchar('A');
-  uart_putchar('B');
-  uart_putchar('C');
-  uart_putchar('\n');
+  uart::putchar('A');
+  uart::putchar('B');
+  uart::putchar('C');
+  uart::putchar('\n');
 
-  uart_write("input:\n");
+  uart::write("input:\n");
 
-  gic_init();
-  gic_enable_interrupt(UART0_INTERRUPT);
-  cpu_enable_interrupts();
+  gic::gic_init();
+  gic::gic_enable_interrupt(UART0_INTERRUPT);
+  cpu::cpu_enable_interrupts();
 
   while (1)
     ;

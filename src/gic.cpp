@@ -1,7 +1,8 @@
 #include "gic.h"
 
-static gic_distributor_registers_t *gic_dregs;
-static gic_cpu_interface_registers_t *gic_ifregs;
+namespace gic {
+static volatile gic_distributor_registers_t *gic_dregs;
+static volatile gic_cpu_interface_registers_t *gic_ifregs;
 
 void gic_init(void) {
   gic_ifregs = (gic_cpu_interface_registers_t *)GIC_IFACE_BASE;
@@ -10,7 +11,6 @@ void gic_init(void) {
   WRITE32(gic_ifregs->CCPMR, 0xFFFFu);      /* Enable all interrupt priorities */
   WRITE32(gic_ifregs->CCTLR, CCTRL_ENABLE); /* Enable interrupt forwarding to this CPU */
 
-  gic_distributor_registers_t *gic_dregs = (gic_distributor_registers_t *)GIC_DIST_BASE;
   WRITE32(gic_dregs->DCTLR, DCTRL_ENABLE); /* Enable the interrupt distributor */
 }
 
@@ -38,3 +38,4 @@ uint16_t gic_acknowledge_interrupt(void) {
 void gic_end_interrupt(uint16_t number) {
   WRITE32(gic_ifregs->CEOIR, (number & CEOIR_ID_MASK));
 }
+} // namespace gic

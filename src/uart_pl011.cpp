@@ -3,23 +3,24 @@
 
 #include <math.h>
 
-static uart_registers_t *uart0 = (uart_registers_t *)0x10009000u;
+namespace uart {
+static registers_t *uart0 = (registers_t *)0x10009000u;
 static const uint32_t refclock = 24000000u; /* 24 MHz */
 
-uart_error_t uart_init(void) {
-  return UART_OK;
+error_t init(void) {
+  return error_t::UART_OK;
 }
 
-uart_error_t uart_configure(uart_config_t *config) {
+error_t configure(config_t *config) {
   /* Validate config */
   if (config->data_bits < 5u || config->data_bits > 8u)
-    return UART_INVALID_ARGUMENT_WORDSIZE;
+    return error_t::UART_INVALID_ARGUMENT_WORDSIZE;
 
   if (config->stop_bits == 0u || config->stop_bits > 2u)
-    return UART_INVALID_ARGUMENT_STOP_BITS;
+    return error_t::UART_INVALID_ARGUMENT_STOP_BITS;
 
   if (config->baudrate < 110u || config->baudrate > 460800u)
-    return UART_INVALID_ARGUMENT_BAUDRATE;
+    return error_t::UART_INVALID_ARGUMENT_BAUDRATE;
 
   /* Disable the UART */
   uart0->CR &= ~CR_UARTEN;
@@ -83,40 +84,41 @@ uart_error_t uart_configure(uart_config_t *config) {
   /* Enable the UART */
   uart0->CR |= CR_UARTEN;
 
-  return UART_OK;
+  return error_t::UART_OK;
 }
 
-void uart_putchar(char c) {
+void putchar(char c) {
   while (uart0->FR & FR_TXFF)
     ;
   uart0->DR = c;
 }
 
-void uart_write(const char *data) {
+void write(const char *data) {
   while (*data) {
-    uart_putchar(*data++);
+    putchar(*data++);
   }
 }
 
-uart_error_t uart_getchar(char *c) {
+error_t getchar(char *c) {
   if (uart0->FR & FR_RXFE) {
-    return UART_NO_DATA;
+    return error_t::UART_NO_DATA;
   }
 
   *c = uart0->DR & DR_DATA_MASK;
   if (uart0->RSRECR & RSRECR_ERR_MASK) {
     /* The character had an error */
     uart0->RSRECR &= RSRECR_ERR_MASK;
-    return UART_RECEIVE_ERROR;
+    return error_t::UART_RECEIVE_ERROR;
   }
-  return UART_OK;
+  return error_t::UART_OK;
 }
 
-void __attribute__((interrupt)) uart_isr(void) {
-  uint16_t irq = gic_acknowledge_interrupt();
-  if (irq == 37) {
-    uart_write("Interrupted\n");
-  }
-  uart0->ICR = ICR_ALL_MASK;
-  gic_end_interrupt(37);
-}
+/* void __attribute__((interrupt)) isr(void) { */
+/*   uint16_t irq = gic_acknowledge_interrupt(); */
+/*   if (irq == 37) { */
+/*     write("Interrupted\n"); */
+/*   } */
+/*   uart0->ICR = ICR_ALL_MASK; */
+/*   gic_end_interrupt(37); */
+/* } */
+} // namespace uart
