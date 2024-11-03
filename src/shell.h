@@ -2,14 +2,9 @@
 
 #include <cstdint>
 
-class shell
+namespace shell
 {
-private:
-  char buf[64];
-  uint8_t buf_idx = 0u;
+void init();
+void run();
+} // namespace shell
 
-  void parse_cmd();
-
-public:
-  void run();
-};

@@ -22,8 +22,8 @@ int main()
 
   uart::write("Type below...\n");
 
-  shell sh;
-  sh.run();
+  shell::init();
+  shell::run();
 
   return 0;
 }

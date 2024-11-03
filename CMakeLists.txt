@@ -17,7 +17,7 @@ file(GLOB LINKSCRIPT "src/linkscript.ld")
 set(ASMFILES src/startup.s)
 file(GLOB SRCLIST "src/*.cpp")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Og -g -Wall -nostartfiles")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g -Wall -nostartfiles")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mthumb -mcpu=cortex-a9")
 set(CMAKE_CXX_FLAGS
     "${CMAKE_CXX_FLAGS} -fno-exceptions -fno-unwind-tables -fno-rtti")

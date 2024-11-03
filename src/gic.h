@@ -59,7 +59,8 @@ struct cpu_interface_registers_t {
 
 void init(void);
 void enable_interrupt(uint16_t number);
-uint16_t acknowledge_interrupt();
+
+uint16_t acknowledge_interrupt(void);
 void end_interrupt(uint16_t number);
 
 constexpr auto GIC_IFACE_OFFSET = 0x100ul;

@@ -43,7 +43,7 @@ struct config_t {
 constexpr auto UART0 = 0x10009000u;
 constexpr auto REF_CLOCK = 24000000u; /* 24 MHz */
 
-constexpr auto UART0_INTERRUPT = 37u;
+constexpr uint16_t UART0_INTERRUPT = 37u;
 
 constexpr auto DR_DATA_MASK = 0xFFu;
 
@@ -78,10 +78,14 @@ constexpr auto BE_INTERRUPT = 1u << 9u;
 
 constexpr auto ICR_ALL_MASK = 0x7FFu;
 
-error_t configure(config_t &config);
+error_t configure(const config_t &config);
 void putchar(char c);
 void write(const char *data);
 error_t getchar(char &c);
-/* void isr(void); */
+
+using cmd_handler_t = void (*)(const char *);
+void register_cmd_handler(cmd_handler_t cmd_handler);
 
 } // namespace uart
+
+/* extern "C" void __attribute__((interrupt)) uart_isr(void *); */

@@ -41,4 +41,14 @@ void enable_interrupt(uint16_t number)
   write32(dregs->DITARGETSR[reg], reg_val);
 }
 
+uint16_t acknowledge_interrupt(void)
+{
+  return ifregs->CIAR & CIAR_ID_MASK;
+}
+
+void end_interrupt(uint16_t number)
+{
+  write32(ifregs->CEOIR, (number & CEOIR_ID_MASK));
+}
+
 } // namespace gic

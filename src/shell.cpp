@@ -3,28 +3,29 @@
 #include "uart_pl011.h"
 #include <cstring>
 
-void shell::parse_cmd()
+namespace shell
 {
-  if (!strncmp("help\r", buf, strlen("help\r"))) {
+
+void parse_cmd(const char *cmd)
+{
+  if (!strncmp("help\r", cmd, strlen("help\r"))) {
     uart::write("Just type and see what happens!\n");
-  } else if (!strncmp("uname\r", buf, strlen("uname\r"))) {
+  } else if (!strncmp("uname\r", cmd, strlen("uname\r"))) {
     uart::write("bare-metal arm 06_uart\n");
+  } else {
+    uart::write("unknown command\n");
   }
 }
 
-void shell::run()
+void init()
 {
-  while (1) {
-    char c;
-    if (uart::getchar(c) == uart::error_t::UART_OK) {
-      uart::putchar(c);
-      buf[buf_idx % 64] = c;
-      buf_idx++;
-      if (c == '\r') {
-        uart::write("\n");
-        buf_idx = 0u;
-        parse_cmd();
-      }
-    }
-  }
+  uart::register_cmd_handler(parse_cmd);
 }
+
+void run()
+{
+  while (1)
+    ;
+}
+
+} // namespace shell

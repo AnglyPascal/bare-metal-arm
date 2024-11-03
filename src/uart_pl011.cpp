@@ -1,4 +1,6 @@
 #include "uart_pl011.h"
+#include "gic.h"
+#include "irq.h"
 #include <math.h>
 
 namespace uart
@@ -11,7 +13,9 @@ error_t init(void)
   return error_t::UART_OK;
 }
 
-error_t configure(config_t &config)
+void isr();
+
+error_t configure(const config_t &config)
 {
   /* Validate config */
   if (config.data_bits < 5u || config.data_bits > 8u) {
@@ -85,6 +89,7 @@ error_t configure(config_t &config)
 
   /* Enable the UARTRXINTR interrupt, Tb. 3-14 */
   uart0->IMSC |= IMSC_RXIM;
+  irq::register_isr(UART0_INTERRUPT, isr);
 
   /* Enable the UART */
   uart0->CR |= CR_UARTEN;
@@ -121,4 +126,54 @@ error_t getchar(char &c)
   return error_t::UART_OK;
 }
 
+struct buffer_t {
+  cmd_handler_t cmd_handler;
+
+  static constexpr auto bufsize = 31;
+  char buf[bufsize];
+  uint8_t i;
+
+  void push(char c)
+  {
+    if (i == bufsize - 1)
+      i = 0;
+    buf[i++] = c;
+  }
+
+  void cmd(void)
+  {
+    buf[i] = '\0';
+    cmd_handler(buf);
+    i = 0;
+  }
+};
+
+buffer_t buffer{};
+
+void register_cmd_handler(cmd_handler_t cmd_handler)
+{
+  buffer.cmd_handler = cmd_handler;
+}
+
+void isr()
+{
+  uint32_t status = uart0->MIS;
+  if (status & RX_INTERRUPT) {
+    char c = uart0->DR & DR_DATA_MASK;
+    putchar(c);
+    buffer.push(c);
+    if (c == '\r') {
+      putchar('\n');
+      buffer.cmd();
+    }
+  } else if (status & BE_INTERRUPT) {
+    write("Break error detected\n");
+    /* clear the error flag */
+    uart0->RSRECR = ECR_BE;
+    /* clear the interrupt */
+    uart0->ICR = BE_INTERRUPT;
+  }
+}
+
 } // namespace uart
+
