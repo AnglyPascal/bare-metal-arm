@@ -11,3 +11,6 @@ inline constexpr void write32(volatile uint32_t &reg, uint32_t val)
   *(volatile uint32_t *)&reg = val;
 }
 
+inline constexpr uint32_t bit(uint8_t b) {
+  return 1u << b;
+}

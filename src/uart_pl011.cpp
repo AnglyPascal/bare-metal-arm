@@ -40,7 +40,7 @@ error_t configure(const config_t &config)
 
   /* Set baudrate */
   double intpart, fractpart;
-  double baudrate_divisor = (double)REF_CLOCK / (16u * config.baudrate);
+  double baudrate_divisor = (double)cpu::REF_CLOCK / (16u * config.baudrate);
   fractpart = modf(baudrate_divisor, &intpart);
 
   uart0->IBRD = (uint16_t)intpart;
@@ -127,11 +127,11 @@ error_t getchar(char &c)
 }
 
 struct buffer_t {
-  cmd_handler_t cmd_handler;
+  cmd_handler_t cmd_handler = nullptr;
 
   static constexpr auto bufsize = 31;
-  char buf[bufsize];
-  uint8_t i;
+  char buf[bufsize] = {0};
+  uint8_t i = 0;
 
   void push(char c)
   {
@@ -142,8 +142,10 @@ struct buffer_t {
 
   void cmd(void)
   {
-    buf[i] = '\0';
-    cmd_handler(buf);
+    if (cmd_handler != nullptr) {
+      buf[i] = '\0';
+      cmd_handler(buf);
+    }
     i = 0;
   }
 };

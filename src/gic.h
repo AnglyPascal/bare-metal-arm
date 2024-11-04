@@ -7,7 +7,7 @@
 namespace gic
 {
 
-/* #pragma pack(push, 1) */
+#pragma pack(push, 1)
 struct distributor_registers_t {
   uint32_t DCTLR;        /* 0x0 Distributor Control register */
   const uint32_t DTYPER; /* 0x4 Controller type register */
@@ -34,9 +34,9 @@ struct distributor_registers_t {
   uint32_t DICFGR[64]; /* 0xC00 - 0xCFC Interrupt config registers */
   /* Some PPI, SPI status registers and identification registers beyond this. */ /*    Don't care about them */
 };
-/* #pragma pack(pop) */
+#pragma pack(pop)
 
-/* #pragma pack(push, 1) */
+#pragma pack(push, 1)
 struct cpu_interface_registers_t {
   uint32_t CCTLR; /* 0x0 CPU Interface control register */
 
@@ -55,7 +55,7 @@ struct cpu_interface_registers_t {
   const uint32_t
       CAHPPIR; /* 0x28 Aliased highest priority pending interrupt register */
 };
-/* #pragma pack(pop) */
+#pragma pack(pop)
 
 void init(void);
 void enable_interrupt(uint16_t number);

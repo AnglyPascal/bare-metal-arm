@@ -1,5 +1,6 @@
 #include "cpu.h"
 #include "gic.h"
+#include "ptimer.h"
 #include "shell.h"
 #include "uart_pl011.h"
 
@@ -18,8 +19,12 @@ int main()
 
   gic::init();
   gic::enable_interrupt(uart::UART0_INTERRUPT);
-  cpu::enable_interrupts();
 
+  gic::enable_interrupt(ptimer::PTIMER0_INTERRUPT);
+  if (ptimer::init(1000u) != ptimer::error_t::PTIMER_OK)
+    uart::write("ptimer setup failed\n");
+
+  cpu::enable_interrupts();
   uart::write("Type below...\n");
 
   shell::init();

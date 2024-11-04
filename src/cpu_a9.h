@@ -5,6 +5,8 @@
 namespace cpu
 {
 
+constexpr auto REF_CLOCK = 24000000u; /* 24 MHz */
+
 inline uint32_t get_periphbase(void);
 inline void enable_interrupts(void);
 

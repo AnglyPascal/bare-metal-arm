@@ -41,26 +41,25 @@ struct config_t {
 };
 
 constexpr auto UART0 = 0x10009000u;
-constexpr auto REF_CLOCK = 24000000u; /* 24 MHz */
 
 constexpr uint16_t UART0_INTERRUPT = 37u;
 
 constexpr auto DR_DATA_MASK = 0xFFu;
 
-constexpr auto ECR_BE = 1 << 2u;
+constexpr auto ECR_BE = bit(2);
 
-constexpr auto FR_BUSY = 1 << 3u;
-constexpr auto FR_RXFE = 1 << 4u;
-constexpr auto FR_TXFF = 1 << 5u;
+constexpr auto FR_BUSY = bit(3);
+constexpr auto FR_RXFE = bit(4);
+constexpr auto FR_TXFF = bit(5);
 
 constexpr auto RSRECR_ERR_MASK = 0xFu;
 
-constexpr auto LCR_H_FEN = 1 << 4u;
-constexpr auto LCR_H_PEN = 1 << 1u;
-constexpr auto LCR_H_EPS = 1 << 2u;
-constexpr auto LCR_H_STP2 = 1 << 3u;
-constexpr auto LCR_H_SPS = 1 << 7u;
-constexpr auto CR_UARTEN = 1 << 0u;
+constexpr auto LCR_H_FEN = bit(4);
+constexpr auto LCR_H_PEN = bit(1);
+constexpr auto LCR_H_EPS = bit(2);
+constexpr auto LCR_H_STP2 = bit(3);
+constexpr auto LCR_H_SPS = bit(7);
+constexpr auto CR_UARTEN = bit(0);
 
 constexpr auto LCR_H_WLEN_5BITS = 0u << 5u;
 constexpr auto LCR_H_WLEN_6BITS = 1u << 5u;
@@ -73,8 +72,8 @@ constexpr auto IFLS_TXFL_1_8 = 0u << 2u;
 constexpr auto IMSC_RXIM = 1u << 4u;
 constexpr auto IMSC_TXIM = 1u << 5u;
 
-constexpr auto RX_INTERRUPT = 1u << 4u;
-constexpr auto BE_INTERRUPT = 1u << 9u;
+constexpr auto RX_INTERRUPT = bit(4);
+constexpr auto BE_INTERRUPT = bit(9);
 
 constexpr auto ICR_ALL_MASK = 0x7FFu;
 
